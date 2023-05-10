@@ -1,6 +1,7 @@
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
+import logo from '../images/logo192.png';
 
 function Header({estado, connectWallet}){
 
@@ -11,7 +12,7 @@ function Header({estado, connectWallet}){
                 <Navbar.Brand href="#home">
                     <img
                     alt=""
-                    src="/logo192.png"
+                    src={logo}
                     width="30"
                     height="30"
                     className="d-inline-block align-top"
