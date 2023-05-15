@@ -61,7 +61,8 @@ async function connect(){
 
 async function bet(valor){    
     try{          
-        const resultado = await betsContract.bet(valor, {value: ethers.utils.parseEther("0.001")});
+        const tx = await betsContract.bet(valor, {value: ethers.utils.parseEther("0.001")});
+        const resultado = await tx.wait();
         return [true, resultado];
     }catch(err){
         return [false, err];  

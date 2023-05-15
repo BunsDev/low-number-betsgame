@@ -211,9 +211,6 @@ function App(){
                     <ToastContainer />
                     { (!metamaskActive)?<Alert variant="danger" onClick={onCloseAlertMetamask}>Sorry, metamask not installed.</Alert>:'' }
                     <Row>
-                        <Col sm={{ span: 12, order: 3 }} md={{ span: 4, order: 1 }}>
-                            <Historical data={historical}/>
-                        </Col>
                         <Col sm={{ span: 12, order: 1 }} md={{ span: 4, order: 2 }}>
                             <Row className='text-center'>
                                 <Bet setNewBet={updateBets} numBets={numBets} gameId={gameId}/>
@@ -225,8 +222,11 @@ function App(){
                             <Row>
                                 <Rules />
                             </Row>
-                        </Col>       
-                        <Col sm={{ span: 12, order: 2 }} md={{ span: 4, order: 3 }}>                            
+                        </Col>                           
+                        <Col sm={{ span: 12, order: 2 }} md={{ span: 4, order: 1 }}>
+                            <Historical data={historical}/>
+                        </Col>
+                        <Col sm={{ span: 12, order: 3 }} md={{ span: 4, order: 3 }}>                            
                             {connected && <Profile currentBets={currentBets} profile={profile} account={currentAccount} />}
                         </Col>             
                     </Row>
