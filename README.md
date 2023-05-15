@@ -8,13 +8,17 @@ Open a terminal and run hardhat local node
 > npx hardhat node
 
 # 2. Compile and deploy smartcontract
-Open a new terminal
+1. Open a new terminal
 > cd ./smartcontract
 
 for local tests:
+2. Run command:
 > npx hardhat run scripts/deploy.js --network localhost 
 
 for Goerli deploment:
+2. Change "dot_env (exmple).txt" to ".env"
+3. Fulfill parameters
+4. Run command:
 > npx hardhat run scripts/deploy.js --network goerli
 
 Important:
