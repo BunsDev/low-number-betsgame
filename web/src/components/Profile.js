@@ -1,11 +1,7 @@
 import Table from 'react-bootstrap/Table';
 import {useEffect, useState} from 'react';
 
-function Profile({currentBets, profile, gameId, account}){
-
-    useEffect(()=>{
-        console.log('currentBets', currentBets);
-    }, []);
+function Profile({currentBets, profile, account}){
 
     const lista = profile.map((fila, index)=>{
         return(

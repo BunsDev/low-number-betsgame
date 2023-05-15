@@ -42,7 +42,7 @@ function Bet({setNewBet, numBets, gameId}){
                 <Button variant="primary" type="button" style={{'width': '130px'}} onClick={handleClick}>Bet</Button>
                 <div className='mt-3'>
                     <p className="m-1">Accumulated bets: {numBets}</p>
-                    <p className="m-1">Pending bets: {198-numBets}</p>
+                    <p className="m-1">Pending bets: {200-numBets}</p>
                 </div>
             </Form>
         </div>

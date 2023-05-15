@@ -1,4 +1,5 @@
 web/node_modules/
 web/build/
 smartcontract/node_modules/
+smartcontract/.env
 

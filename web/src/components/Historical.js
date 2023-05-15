@@ -9,7 +9,7 @@ function Historical({data}){
             return(<tr key={idx}>
                 <td>{data.id}</td>
                 <td>{data.date}</td>
-                <td><a href="#">{data.winner.substring(1, 9)}..{data.winner.substring(34, 42)}</a></td>
+                <td><a target="_blank" href={"https://goerli.etherscan.io/address/" + data.winner}>{data.winner.substring(1, 9)}..{data.winner.substring(34, 42)}</a></td>
                 <td>{data.number}</td>
             </tr>);
         });

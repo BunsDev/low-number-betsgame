@@ -5,6 +5,8 @@ const {
   const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
   const { expect } = require("chai");
   const { ethers } = require("hardhat");
+
+  const PRICE = "0.001";
   
   describe("This is our main testing scope", function () {
 
@@ -35,14 +37,14 @@ const {
     it("Should get gamdId=4 y n_bets=6 - owner & account1", async function () {
 
       // owner: 3 bets
-      await bets.bet(51, {value: ethers.utils.parseEther("1.0")});
-      await bets.bet(52, {value: ethers.utils.parseEther("1.0")});
-      await bets.bet(53, {value: ethers.utils.parseEther("1.0")});
+      await bets.bet(51, {value: ethers.utils.parseEther(PRICE)});
+      await bets.bet(52, {value: ethers.utils.parseEther(PRICE)});
+      await bets.bet(53, {value: ethers.utils.parseEther(PRICE)});
 
       // account1: 3 bets
-      await bets.connect(account1).bet(13, {value: ethers.utils.parseEther("1.0")});
-      await bets.connect(account1).bet(14, {value: ethers.utils.parseEther("1.0")});
-      await bets.connect(account1).bet(15, {value: ethers.utils.parseEther("1.0")});        
+      await bets.connect(account1).bet(13, {value: ethers.utils.parseEther(PRICE)});
+      await bets.connect(account1).bet(14, {value: ethers.utils.parseEther(PRICE)});
+      await bets.connect(account1).bet(15, {value: ethers.utils.parseEther(PRICE)});        
 
       const [a, b] = await bets.getLastGameData();
       const a2 = parseInt(Number(a));
@@ -56,23 +58,23 @@ const {
       let i=0;
       for(i=0; i<51; i++){
         if (i!=11){
-           await bets.bet(i, {value: ethers.utils.parseEther("1.0")});  
+           await bets.bet(i, {value: ethers.utils.parseEther(PRICE)});  
         }
       }
 
       // account 1 bets for: 50...99
       for(i=50; i<100; i++){
-        await bets.connect(account1).bet(i, {value: ethers.utils.parseEther("1.0")});  
+        await bets.connect(account1).bet(i, {value: ethers.utils.parseEther(PRICE)});  
       }
 
       // account 2 bets for: 0...49 => 11 winner  
       for(i=0; i<50; i++){      
-          await bets.connect(account2).bet(i, {value: ethers.utils.parseEther("1.0")});          
+          await bets.connect(account2).bet(i, {value: ethers.utils.parseEther(PRICE)});          
       }
       
       // account 3 bets for: 12...61
       for(i=12; i<62; i++){
-        await bets.connect(account3).bet(i, {value: ethers.utils.parseEther("1.0")});  
+        await bets.connect(account3).bet(i, {value: ethers.utils.parseEther(PRICE)});  
       }        
 
       const [historical, game, n_bets] = await bets.getPublicData();
@@ -90,21 +92,9 @@ const {
       //console.log(balanceInEth);
 
       // 10.000 originales - 50 apuestas + 200 ganancia - 1 gas
-      const balanceFinal = (10000-50+200-1); //*8/10;
+      const balanceFinal = 10000+(200-50)*0.001-1; //*8/10;
       expect(balanceInEth).greaterThan(balanceFinal);
-    });  
-
-    /*
-    it("Check owner balance ", async function () {
-      const balance = await ethers.provider.getBalance(owner.address);
-      const balanceInEth = Number(ethers.utils.formatEther(balance));
-      //console.log(balanceInEth);
-
-      // originales - 3 apuestas - 50 apuestas + 20 beneficio - 1 gas
-      const balanceFinal = ownerBalance - 54 + 20;
-      expect(balanceInEth).greaterThan(balanceFinal);
-    });
-    */        
+    });        
 
   });
 

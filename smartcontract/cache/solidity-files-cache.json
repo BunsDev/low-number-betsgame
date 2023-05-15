@@ -37,8 +37,8 @@
       ]
     },
     "C:\\75_tutoriales_mios\\230208_curso_Ethereum (Alchemy)\\230401_proyecto\\smartcontract\\contracts\\Bets.sol": {
-      "lastModificationDate": 1683669537644,
-      "contentHash": "8ddb4342368593bd4b9d7cd46ff2f0cf",
+      "lastModificationDate": 1684063907567,
+      "contentHash": "f4600195b4a3d8c72f97192817bdb3c1",
       "sourceName": "contracts/Bets.sol",
       "solcConfig": {
         "version": "0.8.18",
@@ -71,9 +71,9 @@
         "Bets"
       ]
     },
-    "C:\\75_tutoriales_mios\\230510_test_git\\betsgame\\smartcontract\\contracts\\Bets.sol": {
-      "lastModificationDate": 1683669537644,
-      "contentHash": "8ddb4342368593bd4b9d7cd46ff2f0cf",
+    "C:\\75_tutoriales_mios\\230510_git\\betsgame\\smartcontract\\contracts\\Bets.sol": {
+      "lastModificationDate": 1684063907567,
+      "contentHash": "f4600195b4a3d8c72f97192817bdb3c1",
       "sourceName": "contracts/Bets.sol",
       "solcConfig": {
         "version": "0.8.18",

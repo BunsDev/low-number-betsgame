@@ -1,5 +1,13 @@
 const hre = require("hardhat");
 
+const PRICE = "0.001";
+
+async function bet(contract, number){
+  let tx = await contract.bet(number, {value: ethers.utils.parseEther(PRICE)});   
+  await tx.wait();
+  console.log('-> ', number);
+}
+
 async function main() {
 
   [owner, account1, account2, account3] = await hre.ethers.getSigners();
@@ -16,33 +24,49 @@ async function main() {
 
   console.log(a2, b);  
 
-  // owner: 3 bets
-  await bets.bet(53, {value: ethers.utils.parseEther("1.0")});
-  await bets.bet(54, {value: ethers.utils.parseEther("1.0")});
-  await bets.bet(55, {value: ethers.utils.parseEther("1.0")});  
+  let ganadores = [5, 10, 55, 60]
 
-  // owner bets for: 0...10, 12...50  (se salta el 11)    
-  let i=0;
-  for(i=0; i<51; i++){
-    if (i!=11){
-        await bets.bet(i, {value: ethers.utils.parseEther("1.0")});  
-    }
-  }
+  for (let juego=0; juego<4; juego++){
 
-  // account 1 bets for: 50...99
-  for(i=50; i<100; i++){
-    await bets.connect(account1).bet(i, {value: ethers.utils.parseEther("1.0")});  
-  }
+      // owner bets for: 0...49 => 50 - 1    
+      let i=0;
+      let contract = bets.connect(owner);
+      for(i=0; i<50; i++){
+        
+        let no_jugar = ((ganadores[juego]===i) && (juego===0)) || 
+                       ((ganadores[juego]===i) && (juego===1)); 
 
-  // account 2 bets for: 0...49 => 11 winner  
-  for(i=0; i<50; i++){      
-      await bets.connect(account2).bet(i, {value: ethers.utils.parseEther("1.0")});          
+        if (!no_jugar){
+            await bet(contract, i);
+        }
+      }  
+
+      // account 1 bets for: 50...99 => 50 - 1
+      contract = bets.connect(account1);
+      for(i=50; i<100; i++){
+
+        let no_jugar = ((ganadores[juego]===i) && (juego===2)) || 
+                       ((ganadores[juego]===i) && (juego===3));
+
+        if (!no_jugar){
+            await bet(contract, i);
+        }
+      }
+
+      // account 2 bets for: 0...49 => 50
+      contract = bets.connect(account2); 
+      for(i=0; i<50; i++){       
+          await bet(contract, i);        
+      }
+      
+      // account 3 bets 49 .. 99 => 51
+      contract = bets.connect(account3);
+      for(i=49; i<100; i++){ 
+        await bet(contract, i);
+      }   
+
+
   }
-  
-  // account 3 bets for: 12...61
-  for(i=12; i<62; i++){
-    await bets.connect(account3).bet(i, {value: ethers.utils.parseEther("1.0")});  
-  }   
 
 }
 

@@ -10,21 +10,31 @@ Open a terminal and run hardhat local node
 # 2. Compile and deploy smartcontract
 Open a new terminal
 > cd ./smartcontract
-> npx hardhat run scripts/deploy.js --network localhost
+
+for local tests:
+> npx hardhat run scripts/deploy.js --network localhost 
+
+for Goerli deploment:
+> npx hardhat run scripts/deploy.js --network goerli
+
+Important:
+- Copy deploymet address and paste it in ./web/src/utils/constant.js
 
 # 3. Run Web
 Open a new terminal and go to web directory
 > cd ./web
-> npm Install
+> npm install
 > npm start
 
 # 4 Tests
-Open a new terminal or do it over the one use to deploy the smartcontract
-## 4.1. (Optional) Run independent test (other hardhat node instance)
+Open a new terminal or do it over the one used to deploy the smartcontract
+for local test change GOERLY constant in App.js to false;
+
+## 4.1. (Optional) Run local test (other hardhat node instance)
 > cd ./smartcontract
 > npx hardhat test test/bets.js --network localhost
 
-## 4.2. (Optional) Run test over deployed contract (you can watch changes on the web)
+## 4.2. (Optional) Run local test over deployed contract (you can watch changes on the web)
 > cd ./smartcontract
 > npx hardhat run test/bets2.js --network localhost
 

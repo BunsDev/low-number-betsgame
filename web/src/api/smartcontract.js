@@ -12,7 +12,7 @@ function init(){
         if (window.ethereum.isMetaMask) {
           console.log('MetaMask is active');
 
-          provider = new ethers.providers.Web3Provider(window.ethereum);
+          provider = new ethers.providers.Web3Provider(window.ethereum);              
           betsContract = new ethers.Contract(contractAddress, contractAbi, provider);           
           return true;
 
@@ -25,14 +25,19 @@ function init(){
       return false;
 }
 
+async function getChainId(){
+    const network = await provider.send("eth_chainId");
+    //console.log('network: ', network);
+    return network;    
+}
+
 async function connect(){
 
     // Si MetaMask no está instalado
     if(window.ethereum == null){
-        alert('install MetaMask');
-        console.log('MetaMask no está instalado');
+        //console.log('MetaMask no está instalado');
         provider = ethers.providers.getDefaultProvider();
-        return [false, null];
+        return {ok: false, msg: 'MetaMask no está instalado'};
     // Si Metamak está intalado
     }else{
         try{
@@ -42,45 +47,35 @@ async function connect(){
 
             signer = provider.getSigner(accounts[0]);
             let walletAddress = await signer.getAddress();
-            //console.log('connect() => walletAddress: ', walletAddress);
-            //console.log('connect() => signer: ', signer);
-
             betsContract = new ethers.Contract(contractAddress, contractAbi, signer);
 
-            return [true, walletAddress];
+            return {ok: true, walletAddress: walletAddress};
 
         }catch(err){
             console.log(err);
-            return [false, null];
+            return {ok: false, msg: 'Something went wrong, please, refresh the page.'};
         }
 
     }
 }
 
-async function bet(valor){
-    console.log('prueba_evento');
-    
-    //betsContract = new ethers.Contract(contractAddress, contractAbi, provider); // signer
+async function bet(valor){    
     try{          
-        //const resultado = await betsContract.connect(signer).bet(valor, {value: ethers.utils.parseEther("1.0")});
-        const resultado = await betsContract.bet(valor, {value: ethers.utils.parseEther("1.0")});
-        console.log('resultado: ', resultado);
-        return true;
+        const resultado = await betsContract.bet(valor, {value: ethers.utils.parseEther("0.001")});
+        return [true, resultado];
     }catch(err){
-        console.log('bet():', err);  
-        return false;  
+        return [false, err];  
     } 
           
 }    
 
 async function getPublicData(){
-    //provider = new ethers.providers.Web3Provider(window.ethereum);
-    //betsContract = new ethers.Contract(contractAddress, contractAbi, provider); 
     try{           
         const [result, id, n_bets] = await betsContract.getPublicData(); 
         let lista = [];
         if (result.length>0){
             lista = result.map((linea)=>{
+                //console.log('linea: ', linea);
                 const { gameId, date, winner, number } = linea;
 
                 let yourDate = new Date(date.toNumber()*1000);
@@ -96,8 +91,8 @@ async function getPublicData(){
             lista.reverse();
         }  
         
-        const gameId = parseInt(Number(id));
-        return [gameId, lista, n_bets];
+        const game_id = parseInt(Number(id));
+        return [game_id, lista, n_bets];
 
     }catch(err){
 
@@ -107,40 +102,33 @@ async function getPublicData(){
 }
 
 function changeSigner(walletAddress){
-    console.log('changeSigner() => ', walletAddress); 
+    //console.log('changeSigner() antes => ', walletAddress); 
     if (walletAddress !== null){
         signer = provider.getSigner(walletAddress); 
         betsContract = new ethers.Contract(contractAddress, contractAbi, signer);
-        //console.log('signer address: ', await signer.getAddress());
     }else{
         signer = null;
         betsContract = new ethers.Contract(contractAddress, contractAbi, provider);
     }    
-    console.log('changeSigner() => ', signer); 
+    //console.log('changeSigner() despues => ', walletAddress); 
 }
 
 async function getProfile(){
   
-    //console.log('prueba');
-    //console.log('provider: ' + provider);  
-    console.log('getProfile() => signer: ', signer); 
+    //console.log('getProfile() => signer: ', signer); 
     if (signer === null){
         return [[], []];    
     }
         
-    //betsContract = new ethers.Contract(contractAddress, contractAbi, signer); // provider
     try{
-        //const result = await betsContract.getBets();             
-        const result = await betsContract.getBets(); // .connect(signer)        
-        console.log('current bets:', result);
 
-        const result2 = await betsContract.getProfile();
-        //console.log('profile: ', result2);
+        const [historico, gameId] = await betsContract.getProfile();
                
         let lista = [];
-        if (result2.length>0){
+        let currentBets = '';
+        if (historico.length>0){
             let id_old = 0;
-            result2.forEach((dato)=>{
+            historico.forEach((dato)=>{
                 let id = parseInt(Number(dato[0]));
                 let cadena = parseInt(Number(dato[1])).toString() + (dato[2]?' (winner)':'');
                 if(id !== id_old){
@@ -152,37 +140,39 @@ async function getProfile(){
             });
 
             lista = lista.reverse();
+
+            if(lista[0].id === parseInt(Number(gameId))){
+                // get current bets
+                currentBets = lista[0].cadena.split(',').map(valor => parseInt(valor));
+                // get historical bets
+                lista = lista.slice(1);        
+            }                    
+
         }
-        console.log('profile: ', lista);
-        return [result, lista];     
+        //console.log('currentBets', currentBets, ', profile: ', lista);
+        return [currentBets, lista];     
 
     }catch(err){
-        console.log(err);   
+        console.log("error getProfile()", err);   
         return [[], []];
     }     
           
 }
 
-
 async function getLastGameData(){
-    console.log('prueba_evento');
     
     if (signer === null){
         betsContract = new ethers.Contract(contractAddress, contractAbi, provider); // signer
     }
         
-    try{
-        //console.log('contract address: ' + betsContract.address);
-        //console.log('contractAbi: ' + contractAbi);
-        //console.log('signer: ' + provider);              
+    try{          
         const [gameId, n_bets] = await betsContract.getLastGameData();
-        console.log(`getLastGameData() => gameId: %s, n_bets: %s`, gameId, n_bets);
         return [true, parseInt(Number(gameId)), n_bets];
     }catch(err){
-        console.log('error prueba_evento():', err);  
+        console.log('error getLastGameData(:', err);  
         return [false, 0, 0];  
     } 
           
 } 
 
-export { init, connect, bet, getPublicData, getProfile, getLastGameData, changeSigner, betsContract };
+export { init, connect, bet, getPublicData, getProfile, getLastGameData, changeSigner, getChainId, betsContract };

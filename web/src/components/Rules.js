@@ -8,9 +8,9 @@ function Rules(){
             <ul>
                 <li>Bet for a number (0 - 99) or many.</li>
                 <li>The lowest not repeated number wins.</li>
-                <li>Game open for 199 bets.</li>
-                <li>Each bet 1 goerliEth.</li>
-                <li>Winner gets 198 goerliEth.</li>
+                <li>Game open for 200 bets.</li>
+                <li>Each bet 0.001 goerliEth.</li>
+                <li>Winner gets 0.2 goerliEth.</li>
             </ul>
         </Container>
         </div>

@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha --timeout 10000" 
+    "test": "node ./node_modules/mocha/bin/mocha --timeout 10000"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "hardhat": "^2.13.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
   }
 }

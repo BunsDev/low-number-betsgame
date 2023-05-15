@@ -19,6 +19,8 @@ contract Bets{
     uint public gameId;   
     // user => [bets]
     mapping(address=>uint8[]) user_bets;
+    // user => numero(0..99)=>usado(true, false)
+    mapping(address=>mapping(uint8=>bool)) user_numero_usado;
     // number (0-99) => times chosen
     uint8[100] number_times;
     // users
@@ -47,34 +49,14 @@ contract Bets{
         n_bets = 0;
         gameId = 1;
         resetNumbers();
-
-        // Prueba historicos   
-        /*
-        address winnerUser = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
-        historical.push(Winner(1, block.timestamp, winnerUser, 47));
-        historical.push(Winner(2, block.timestamp, winnerUser, 3));
-        historical.push(Winner(3, block.timestamp, winnerUser, 99));
-        
-        // Prueba profile
-        profile[winnerUser].push(Apuesta(2, 3, true));
-        profile[winnerUser].push(Apuesta(2, 6, false));
-        profile[winnerUser].push(Apuesta(3, 35, false));
-        profile[winnerUser].push(Apuesta(3, 36, false));
-        gameId = 4;
-        */
-        
     }
 
     function AddWinner(address _user, uint8 _number) private {
         historical.push(Winner(gameId, block.timestamp, _user, _number)); 
     }
 
-    function getPublicData() public view returns (Winner[] memory, uint, uint8){
-        return (historical, gameId, n_bets);
-    }
-
     function resetNumbers() private {
-        for(uint8 i=0; i<99; i++){
+        for(uint8 i=0; i<100; i++){
             number_times[i] = 0;    
         }
     }
@@ -82,6 +64,13 @@ contract Bets{
     function resetBets() private {
         // reset user -> [bets]
         for(uint i=0; i<users.length; i++){
+
+            // reset used numbers for user
+            for(uint8 i2=0; i2<100; i2++){
+                user_numero_usado[users[i]][i2] = false;
+            }
+
+            // delete user bets
             delete user_bets[users[i]];
         }
         // delete users
@@ -185,22 +174,15 @@ contract Bets{
     }    
 
     function bet(uint8 _number) public payable {
-        //console.log('bet');
         require(_number>=0 && _number<=99, 'Number must be between 0 and 99');
-        require(msg.value==1 ether, '1 ETH is required');
+        require(msg.value==0.001 ether, '0.001 ETH is required');
         if (user_bets[msg.sender].length<=0){
             users.push(msg.sender);
         }
 
-        // Check it is not a repeated number for that user
-        bool betRepeated = false;
-        for(uint i=0; i<user_bets[msg.sender].length; i++){
-            if (_number == user_bets[msg.sender][i]){
-                betRepeated = true;
-                break;
-            }
-        }
-        require(!betRepeated, 'Repeated number');
+       // Check it is not a repeated number for that user
+        require(!user_numero_usado[msg.sender][_number], 'Repeated number');
+        user_numero_usado[msg.sender][_number] = true;
 
         user_bets[msg.sender].push(_number);
         profile[msg.sender].push( Apuesta(gameId, _number, false) );
@@ -218,14 +200,16 @@ contract Bets{
 
     }     
 
+    function getPublicData() public view returns (Winner[] memory, uint, uint8){
+        return (historical, gameId, n_bets);
+    }    
+
     function getBets() public view returns (uint8[] memory) {
-        //console.log('getBets');
-        //console.log('user: %s', msg.sender);
         return (user_bets[msg.sender]);
     }
 
-    function getProfile() public view returns(Apuesta[] memory){
-        return profile[msg.sender];
+    function getProfile() public view returns(Apuesta[] memory, uint){
+        return (profile[msg.sender], gameId);
     }
 
     function getLastGameData() public view returns(uint, uint8){
